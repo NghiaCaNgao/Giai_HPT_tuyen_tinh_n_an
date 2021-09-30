@@ -7,6 +7,7 @@ using std::setw;
 int numX;
 int ptr[50][50];
 int stp[50];
+float output[50];
 
 void showMatrix()
 {
@@ -18,6 +19,17 @@ void showMatrix()
         cout << "|" << setw(5) << ptr[i][numX] << "\n";
     }
     cout << "--------------------------------------------------- \n";
+}
+
+void showOutput()
+{
+    cout << "Tap nghiem la: \n";
+    cout << "( ";
+    for (int i = 0; i < numX; i++)
+    {
+        cout << output[i] << " ";
+    }
+    cout << ") \n";
 }
 
 void swapPtr(int i, int j)
@@ -56,7 +68,6 @@ int getStartPoint(int row)
 
 int UCLN(int a, int b)
 {
-    cout << "F: " << a << " " << b;
     int r;
     do
     {
@@ -132,8 +143,11 @@ void sort()
 
 void getInput()
 {
-    cout << "Nhap so an cua phuong trinh: ";
+    cout << "Nhap so an cua phuong trinh (Nhap so 0 de thoat): ";
     cin >> numX;
+    if (numX == 0)
+        exit(0);
+
     cout << "Tiep theo ban phai nhap tat ca " << numX << " phuong trinh. \n";
     cout << "Nhap he so va he so tu do (cach nhau boi space): \n";
     for (int i = 0; i < numX; i++)
@@ -161,17 +175,46 @@ void createLadder()
     }
 }
 
-void solve(){
-    
+bool solve()
+{
+    for (int i = numX - 1; i >= 0; i--)
+    {
+        float tmp = 0;
+        for (int j = i + 1; j <= numX - 1; j++)
+        {
+            tmp += ptr[i][j] * output[j];
+        }
+        if ((ptr[i][i] == 0) && (i == numX - 1))
+        {
+            if (ptr[i][numX] == 0)
+            {
+                cout << "VO SO NGHIEM \n";
+                return false;
+            }
+            else
+            {
+                cout << "VO NGHIEM \n";
+                return false;
+            }
+        }
+        else
+            output[i] = (ptr[i][numX] * 1.0 - tmp) / ptr[i][i];
+    }
+    return true;
 }
 
 int main()
 {
-    getInput();
-    showMatrix();
-    createLadder();
+    do
+    {
+        getInput();
+        showMatrix();
+        createLadder();
 
-    solve();
-    system("pause");
+        if (solve())
+            showOutput();
+        system("pause");
+    } while (true);
+
     return 0;
 }
