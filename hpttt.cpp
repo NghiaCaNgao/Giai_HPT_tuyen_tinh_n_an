@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+
 using namespace std;
 using std::setw;
 
@@ -41,7 +42,7 @@ void swapStp(int i, int j)
 
 int getStartPoint(int row)
 {
-    int start = -1;
+    int start = 99;
     for (int i = 0; i < numX; i++)
     {
         if (ptr[row][i] != 0)
@@ -55,6 +56,7 @@ int getStartPoint(int row)
 
 int UCLN(int a, int b)
 {
+    cout << "F: " << a << " " << b;
     int r;
     do
     {
@@ -90,17 +92,17 @@ void reduce(int ptrIndex)
 
 void reduceFreeNumber(int bac, int ptrIndex)
 {
-    cout << "F: " << bac << " "
-         << ptrIndex << "\n";
     if (stp[ptrIndex] >= bac)
         return;
     int num1 = ptr[bac - 1][bac - 1];
     int num2 = ptr[ptrIndex][bac - 1];
+    if (num2 == 0)
+        return;
+    // cout << bac << " " << ptrIndex << " " << num1 << " " << ptr[ptrIndex][bac - 1] << "\n";
     int boiso = BCNN(num1, num2);
     int boiso1 = boiso / num1;
     int boiso2 = boiso / num2;
 
-    cout << boiso2 << " " << boiso1 << " " << num2 << " " << num1 << "\n";
     for (int m = bac - 1; m <= numX; m++)
     {
         if (m == bac - 1)
@@ -109,7 +111,8 @@ void reduceFreeNumber(int bac, int ptrIndex)
             ptr[ptrIndex][m] = ptr[ptrIndex][m] * boiso2 - ptr[bac - 1][m] * boiso1;
     }
     stp[ptrIndex] = getStartPoint(ptrIndex);
-    reduce(ptrIndex);
+    if (stp[ptrIndex] != 99)
+        reduce(ptrIndex);
 }
 
 void sort()
@@ -145,15 +148,21 @@ void getInput()
 
 void createLadder()
 {
+    int vno = false;
+    int vsn = false;
     for (int i = 0; i < numX; i++)
     {
         for (int j = i; j < numX; j++)
         {
             reduceFreeNumber(i, j);
-            showMatrix();
         }
         sort();
+        showMatrix();
     }
+}
+
+void solve(){
+    
 }
 
 int main()
@@ -162,6 +171,7 @@ int main()
     showMatrix();
     createLadder();
 
+    solve();
     system("pause");
     return 0;
 }
