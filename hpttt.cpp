@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <fstream>
 
 using namespace std;
 using std::setw;
@@ -89,15 +90,24 @@ int BCNN(int a, int b)
 
 void reduce(int ptrIndex)
 {
+    bool hasUC = true;
     int startPoint = stp[ptrIndex];
     int uc = ptr[ptrIndex][startPoint];
     for (int i = startPoint + 1; i <= numX; i++)
     {
+        if (ptr[ptrIndex][i] == 0)
+        {
+            hasUC = false;
+            break;
+        }
         uc = UCLN(uc, ptr[ptrIndex][i]);
     }
-    for (int i = startPoint; i <= numX; i++)
+    if (hasUC)
     {
-        ptr[ptrIndex][i] = ptr[ptrIndex][i] / uc;
+        for (int i = startPoint; i <= numX; i++)
+        {
+            ptr[ptrIndex][i] = ptr[ptrIndex][i] / uc;
+        }
     }
 }
 
@@ -141,7 +151,7 @@ void sort()
     }
 }
 
-void getInput()
+void getInputByConsole()
 {
     cout << "Nhap so an cua phuong trinh (Nhap so 0 de thoat): ";
     cin >> numX;
@@ -160,6 +170,30 @@ void getInput()
     return;
 }
 
+void getInputByFile()
+{
+    ifstream fileInp("input.txt");
+
+    if (fileInp)
+    {
+        fileInp >> numX;
+        cout << numX;
+
+        if (numX == 0)
+            exit(0);
+
+        for (int i = 0; i < numX; i++)
+        {
+            for (int j = 0; j <= numX; j++)
+                fileInp >> ptr[i][j];
+            stp[i] = getStartPoint(i);
+        }
+    }
+
+    fileInp.close();
+    return;
+}
+
 void createLadder()
 {
     int vno = false;
@@ -168,6 +202,7 @@ void createLadder()
     {
         for (int j = i; j < numX; j++)
         {
+            // cout << "Process " << i << " : " << j << "\n";
             reduceFreeNumber(i, j);
         }
         sort();
@@ -203,18 +238,47 @@ bool solve()
     return true;
 }
 
-int main()
+void menu()
 {
-    do
+    int select;
+    cout << "1. Nhap bang console \n";
+    cout << "2. Nhap bang file input.txt \n";
+    cout << "Lua chon: ";
+    cin >> select;
+    switch (select)
     {
-        getInput();
+    case 1:
+    {
+        do
+        {
+            getInputByConsole();
+            showMatrix();
+            createLadder();
+
+            if (solve())
+                showOutput();
+            system("pause");
+        } while (true);
+        break;
+    }
+    case 2:
+    {
+        getInputByFile();
         showMatrix();
         createLadder();
 
         if (solve())
             showOutput();
         system("pause");
-    } while (true);
+    }
 
+    default:
+        break;
+    }
+}
+
+int main()
+{
+    menu();
     return 0;
 }
